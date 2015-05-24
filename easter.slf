@@ -1,0 +1,80 @@
+// Berekening paasdagen 2012 t/m 2021
+
+// Verwachte output:
+// 2012
+// 4
+// 8
+// 2013
+// 3
+// 31
+// 2014
+// 4
+// 20
+// 2015
+// 4
+// 5
+// 2016
+// 3
+// 27
+// 2017
+// 4
+// 16
+// 2018
+// 4
+// 1
+// 2019
+// 4
+// 21
+// 2020
+// 4
+// 12
+// 2021
+// 4
+// 4
+
+int start = 2012;
+int end = 2021;
+
+while (start <= end)
+{
+  int golden;
+  int century;
+  int x;
+  int z;
+  int d;
+  int epact;
+  int n;
+
+  golden = (start % 19) + 1;
+  century = (start / 100) + 1;
+  x = (3 * century / 4) - 12;
+  z = (((8 * century) + 5) / 25) - 5;
+  d = (5 * start / 4) - x - 10;
+  epact = ((11 * golden) + 20 + z - x * 11) % 30;
+  if ((epact == 25 && golden > 11) || epact == 24)
+  then
+  {
+   epact = epact+1;
+  };
+  n = 44 - epact;
+  if (n<21)
+  then
+  {
+    n = n + 30;
+  };
+  n = n + (7 - ((d + n) % 7));
+  if (n >= 32 && n != 0)
+  then
+  {
+    print(start);
+    print(4);
+    print(n - 31);
+  }
+  else
+  {
+    print(start);
+    print(3);
+    print(n);
+  };
+  start = start+1;
+};
