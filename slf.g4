@@ -11,20 +11,25 @@ command:				expression SEMICOLON
 						| while_statement SEMICOLON
 						| declaration SEMICOLON;
 
-expression:				OPAREN expression CPAREN
-						| (MINUS | NOT) expression
-						| expression (MODULO | TIMES | DIVIDE) expression
-						| expression (PLUS | MINUS) expression
-						| expression (LT | LTE | GT | GTE | EQUALS | UNEQUALS) expression
-						| expression AND expression
-						| expression OR expression
-						| read_expression
-						| print_expression
-						| if_expression
-						| compound_expression
-						| assignment_expression
-						| literal
-						| IDENTIFIER;
+expression:				OPAREN expression CPAREN											#closedExpression
+						| (MINUS | NOT) expression											#unaryExpression
+
+						| expression (MODULO | TIMES | DIVIDE) expression					#multiExpression
+						| expression (PLUS | MINUS) expression								#additionExpression
+
+						| expression (LT | LTE | GT | GTE | EQUALS | UNEQUALS) expression	#compareExpression
+
+						| expression AND expression											#andExpression
+						| expression OR expression											#orExpression
+
+						| read_expression													#readExpression
+						| print_expression													#printExpression
+						| if_expression														#ifExpression
+						| compound_expression												#compoundExpression
+						| assignment_expression												#assignmentExpression
+						| literal															#literalExpression
+						| IDENTIFIER														#IDENTIFIERExpression
+						;
 
 while_statement:		WHILE OPAREN expression CPAREN OCURLY command+ CCURLY;
 

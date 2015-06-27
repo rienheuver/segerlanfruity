@@ -245,62 +245,309 @@ public class slfParser extends Parser {
 	}
 
 	public static class ExpressionContext extends ParserRuleContext {
+		public ExpressionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expression; }
+	 
+		public ExpressionContext() { }
+		public void copyFrom(ExpressionContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class IDENTIFIERExpressionContext extends ExpressionContext {
+		public TerminalNode IDENTIFIER() { return getToken(slfParser.IDENTIFIER, 0); }
+		public IDENTIFIERExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterIDENTIFIERExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitIDENTIFIERExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitIDENTIFIERExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class LiteralExpressionContext extends ExpressionContext {
+		public LiteralContext literal() {
+			return getRuleContext(LiteralContext.class,0);
+		}
+		public LiteralExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterLiteralExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitLiteralExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitLiteralExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AssignmentExpressionContext extends ExpressionContext {
+		public Assignment_expressionContext assignment_expression() {
+			return getRuleContext(Assignment_expressionContext.class,0);
+		}
+		public AssignmentExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterAssignmentExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitAssignmentExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitAssignmentExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class UnaryExpressionContext extends ExpressionContext {
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode MINUS() { return getToken(slfParser.MINUS, 0); }
+		public TerminalNode NOT() { return getToken(slfParser.NOT, 0); }
+		public UnaryExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterUnaryExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitUnaryExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitUnaryExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class IfExpressionContext extends ExpressionContext {
+		public If_expressionContext if_expression() {
+			return getRuleContext(If_expressionContext.class,0);
+		}
+		public IfExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterIfExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitIfExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitIfExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class CompareExpressionContext extends ExpressionContext {
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public TerminalNode MINUS() { return getToken(slfParser.MINUS, 0); }
-		public TerminalNode NOT() { return getToken(slfParser.NOT, 0); }
-		public TerminalNode OPAREN() { return getToken(slfParser.OPAREN, 0); }
-		public TerminalNode CPAREN() { return getToken(slfParser.CPAREN, 0); }
-		public Read_expressionContext read_expression() {
-			return getRuleContext(Read_expressionContext.class,0);
-		}
-		public Print_expressionContext print_expression() {
-			return getRuleContext(Print_expressionContext.class,0);
-		}
-		public If_expressionContext if_expression() {
-			return getRuleContext(If_expressionContext.class,0);
-		}
-		public Compound_expressionContext compound_expression() {
-			return getRuleContext(Compound_expressionContext.class,0);
-		}
-		public Assignment_expressionContext assignment_expression() {
-			return getRuleContext(Assignment_expressionContext.class,0);
-		}
-		public LiteralContext literal() {
-			return getRuleContext(LiteralContext.class,0);
-		}
-		public TerminalNode IDENTIFIER() { return getToken(slfParser.IDENTIFIER, 0); }
-		public TerminalNode MODULO() { return getToken(slfParser.MODULO, 0); }
-		public TerminalNode TIMES() { return getToken(slfParser.TIMES, 0); }
-		public TerminalNode DIVIDE() { return getToken(slfParser.DIVIDE, 0); }
-		public TerminalNode PLUS() { return getToken(slfParser.PLUS, 0); }
 		public TerminalNode LT() { return getToken(slfParser.LT, 0); }
 		public TerminalNode LTE() { return getToken(slfParser.LTE, 0); }
 		public TerminalNode GT() { return getToken(slfParser.GT, 0); }
 		public TerminalNode GTE() { return getToken(slfParser.GTE, 0); }
 		public TerminalNode EQUALS() { return getToken(slfParser.EQUALS, 0); }
 		public TerminalNode UNEQUALS() { return getToken(slfParser.UNEQUALS, 0); }
-		public TerminalNode AND() { return getToken(slfParser.AND, 0); }
-		public TerminalNode OR() { return getToken(slfParser.OR, 0); }
-		public ExpressionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_expression; }
+		public CompareExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof slfListener ) ((slfListener)listener).enterExpression(this);
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterCompareExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof slfListener ) ((slfListener)listener).exitExpression(this);
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitCompareExpression(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitExpression(this);
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitCompareExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class MultiExpressionContext extends ExpressionContext {
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public TerminalNode MODULO() { return getToken(slfParser.MODULO, 0); }
+		public TerminalNode TIMES() { return getToken(slfParser.TIMES, 0); }
+		public TerminalNode DIVIDE() { return getToken(slfParser.DIVIDE, 0); }
+		public MultiExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterMultiExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitMultiExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitMultiExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AdditionExpressionContext extends ExpressionContext {
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public TerminalNode PLUS() { return getToken(slfParser.PLUS, 0); }
+		public TerminalNode MINUS() { return getToken(slfParser.MINUS, 0); }
+		public AdditionExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterAdditionExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitAdditionExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitAdditionExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class OrExpressionContext extends ExpressionContext {
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public TerminalNode OR() { return getToken(slfParser.OR, 0); }
+		public OrExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterOrExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitOrExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitOrExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class PrintExpressionContext extends ExpressionContext {
+		public Print_expressionContext print_expression() {
+			return getRuleContext(Print_expressionContext.class,0);
+		}
+		public PrintExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterPrintExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitPrintExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitPrintExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AndExpressionContext extends ExpressionContext {
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public TerminalNode AND() { return getToken(slfParser.AND, 0); }
+		public AndExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterAndExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitAndExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitAndExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ReadExpressionContext extends ExpressionContext {
+		public Read_expressionContext read_expression() {
+			return getRuleContext(Read_expressionContext.class,0);
+		}
+		public ReadExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterReadExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitReadExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitReadExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ClosedExpressionContext extends ExpressionContext {
+		public TerminalNode OPAREN() { return getToken(slfParser.OPAREN, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
+		public TerminalNode CPAREN() { return getToken(slfParser.CPAREN, 0); }
+		public ClosedExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterClosedExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitClosedExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitClosedExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class CompoundExpressionContext extends ExpressionContext {
+		public Compound_expressionContext compound_expression() {
+			return getRuleContext(Compound_expressionContext.class,0);
+		}
+		public CompoundExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).enterCompoundExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof slfListener ) ((slfListener)listener).exitCompoundExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof slfVisitor ) return ((slfVisitor<? extends T>)visitor).visitCompoundExpression(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -325,6 +572,10 @@ public class slfParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 			case 1:
 				{
+				_localctx = new UnaryExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+
 				setState(40);
 				_la = _input.LA(1);
 				if ( !(_la==MINUS || _la==NOT) ) {
@@ -338,6 +589,9 @@ public class slfParser extends Parser {
 				break;
 			case 2:
 				{
+				_localctx = new ClosedExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(42);
 				match(OPAREN);
 				setState(43);
@@ -348,42 +602,63 @@ public class slfParser extends Parser {
 				break;
 			case 3:
 				{
+				_localctx = new ReadExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(46);
 				read_expression();
 				}
 				break;
 			case 4:
 				{
+				_localctx = new PrintExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(47);
 				print_expression();
 				}
 				break;
 			case 5:
 				{
+				_localctx = new IfExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(48);
 				if_expression();
 				}
 				break;
 			case 6:
 				{
+				_localctx = new CompoundExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(49);
 				compound_expression();
 				}
 				break;
 			case 7:
 				{
+				_localctx = new AssignmentExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(50);
 				assignment_expression();
 				}
 				break;
 			case 8:
 				{
+				_localctx = new LiteralExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(51);
 				literal();
 				}
 				break;
 			case 9:
 				{
+				_localctx = new IDENTIFIERExpressionContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(52);
 				match(IDENTIFIER);
 				}
@@ -402,7 +677,7 @@ public class slfParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 					case 1:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new MultiExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(55);
 						if (!(precpred(_ctx, 12))) throw new FailedPredicateException(this, "precpred(_ctx, 12)");
@@ -419,7 +694,7 @@ public class slfParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new AdditionExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(58);
 						if (!(precpred(_ctx, 11))) throw new FailedPredicateException(this, "precpred(_ctx, 11)");
@@ -436,7 +711,7 @@ public class slfParser extends Parser {
 						break;
 					case 3:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new CompareExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(61);
 						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
@@ -453,7 +728,7 @@ public class slfParser extends Parser {
 						break;
 					case 4:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new AndExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(64);
 						if (!(precpred(_ctx, 9))) throw new FailedPredicateException(this, "precpred(_ctx, 9)");
@@ -465,7 +740,7 @@ public class slfParser extends Parser {
 						break;
 					case 5:
 						{
-						_localctx = new ExpressionContext(_parentctx, _parentState);
+						_localctx = new OrExpressionContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(67);
 						if (!(precpred(_ctx, 8))) throw new FailedPredicateException(this, "precpred(_ctx, 8)");
