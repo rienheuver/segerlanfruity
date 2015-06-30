@@ -26,7 +26,10 @@ IF:				'if';
 THEN:			'then';
 ELSE:			'else';
 WHILE:			'while';
-TYPE:			'int' | 'char' | 'boolean' | 'string';
+INT:			'int';
+CHAR:			'char';
+BOOLEAN:		'boolean';
+STRING:			'string';
 
 //interpunction
 COLON:			':';
@@ -38,11 +41,12 @@ CCURLY:			'}';
 COMMA:			',';
 
 // values
-BOOLEAN:		'true' | 'false';
-STRING:			'"' ('\\"' | '\\\\' | ~('\n'|'\r') )*? '"'; // "string" escapes \" and \\
-CHARACTER:		'\'' ( '\\\'' | ~('\n'|'\r') )*? '\''; // 'c' escapes '\''
-IDENTIFIER:		LETTER (LETTER | DIGIT)*;
-NUMBER:			DIGIT+;
+LITERALBOOLEAN:		'true' | 'false';
+LITERALSTRING:			'"' ('\\"' | '\\\\' | ~('\n'|'\r') )*? '"'; // "string" escapes \" and \\
+LITERALCHARACTER:		'\'' ( '\\\'' | ~('\n'|'\r') )*? '\''; // 'c' escapes '\''
+LITERALNUMBER:			DIGIT+;
+
+IDENTIFIER:				LETTER (LETTER | DIGIT)*;
 
 COMMENT:		'//' ~[\r\n]* -> skip;
 

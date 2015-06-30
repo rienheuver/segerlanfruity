@@ -13,9 +13,10 @@ command:				expression SEMICOLON
 						;
 
 expression:				OPAREN expression CPAREN											#closedExpression
-						| (MINUS | NOT) expression											#unaryExpression
+						| MINUS expression													#negativeExpression
+						| NOT expression													#negateExpression
 
-						| expression (MODULO | TIMES | DIVIDE) expression					#multiExpression
+						| expression (MODULO | TIMES | DIVIDE) expression					#multiplyExpression
 						| expression (PLUS | MINUS) expression								#additionExpression
 
 						| expression (LT | LTE | GT | GTE | EQUALS | UNEQUALS) expression	#compareExpression
@@ -32,10 +33,10 @@ expression:				OPAREN expression CPAREN											#closedExpression
 						| IDENTIFIER														#IDENTIFIERExpression
 						;
 
-while_statement:		WHILE OPAREN expression CPAREN OCURLY command+ CCURLY;
+while_statement:		WHILE OPAREN expression CPAREN compound_expression;
 
-declaration:			TYPE IDENTIFIER (COMMA IDENTIFIER)*
-						| CONSTANT? TYPE IDENTIFIER (COMMA IDENTIFIER)* BECOMES expression;
+declaration:			type IDENTIFIER (COMMA IDENTIFIER)*
+						| CONSTANT? type IDENTIFIER (COMMA IDENTIFIER)* BECOMES expression;
 
 read_expression:		READ OPAREN IDENTIFIER (COMMA IDENTIFIER)* CPAREN;
 
@@ -47,8 +48,14 @@ compound_expression:	OCURLY command+ CCURLY;
 
 assignment_expression:	IDENTIFIER BECOMES expression;
 
-literal:				BOOLEAN																#boolean
+literal:				LITERALBOOLEAN														#literal_boolean
+						| LITERALSTRING														#literal_string
+						| LITERALCHARACTER													#literal_character
+						| LITERALNUMBER														#literal_number
+						;
+
+type:					BOOLEAN																#boolean
 						| STRING															#string
-						| CHARACTER															#character
-						| NUMBER															#number
+						| CHAR																#char
+						| INT																#int
 						;

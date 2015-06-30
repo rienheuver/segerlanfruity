@@ -19,14 +19,14 @@ public class IdEntry {
     /**
      * Type van de variabele, opties: char, boolean, integer
      */
-    private int type;
+    private Type type;
 
     /**
      * Constructor van de klasse. Hiermee wordt direct het type en de constant-boolean vast gezet.
      * @param constant true als de variabele constant moet zijn, false als dat niet zo is
      * @param type van de variabele
      */
-    public IdEntry(boolean constant, int type)
+    public IdEntry(boolean constant, Type type)
     {
     	this.constant = constant;
     	this.type = type;
@@ -43,11 +43,11 @@ public class IdEntry {
     }
 
     /**
-     * Levert de int van het type op
+     * Levert het type op
      * @return this.type, de waarde van de klassevariabele type
      * @pure
      */
-    public int getType()
+    public Type getType()
     {
     	return this.type;
     }

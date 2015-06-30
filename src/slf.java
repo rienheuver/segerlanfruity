@@ -43,6 +43,12 @@ public class slf {
 		System.out.println(tree.toStringTree(parser));
 
 		slfChecker checker = new slfChecker();
-		ParseTreeProperty<Integer> decoratedTree = checker.start(tree);
+		checker.start(tree);
+		
+		slfGenerator generator = new slfGenerator();
+		String output = generator.start(tree);
+		
+		// TODO schrijf output naar outputFile
+		
 	}
 }
