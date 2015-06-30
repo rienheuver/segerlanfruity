@@ -44,31 +44,24 @@ public class slf {
 			System.out.println("Start checking...");
 	
 			slfChecker checker = new slfChecker();
-			int errors = checker.start(tree);
+			ParseTreeProperty<Type> decoratedTree = checker.start(tree);
 			
-			if (errors > 0)
+			System.out.println("Start generating...");
+			slfGenerator generator = new slfGenerator(className);
+			String output = generator.start(decoratedTree, tree);
+			
+			try
 			{
-				System.out.println("Compilation stopped. "+errors+" errors found.");
+				PrintWriter pw = new PrintWriter(outputFile);
+				pw.write(output);
+				pw.close();
+				fileFolder = fileFolder.length() == 0 ? "the current directory" : fileFolder;
+				System.out.println("File compiled. You can find it in "+fileFolder+" and run it from that folder by typing:");
+				System.out.println("java "+className);
 			}
-			else
+			catch (FileNotFoundException ex)
 			{
-				System.out.println("Start generating...");
-				slfGenerator generator = new slfGenerator(className);
-				String output = generator.start(tree);
-				
-				try
-				{
-					PrintWriter pw = new PrintWriter(outputFile);
-					pw.write(output);
-					pw.close();
-					fileFolder = fileFolder.length() == 0 ? "the current directory" : fileFolder;
-					System.out.println("File compiled. You can find it in "+fileFolder+" and run it from that folder by typing:");
-					System.out.println("java "+className);
-				}
-				catch (FileNotFoundException ex)
-				{
-					System.out.println(ex.getMessage());
-				}
+				System.out.println(ex.getMessage());
 			}
 		}
 		

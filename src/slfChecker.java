@@ -1,14 +1,17 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 public class slfChecker extends slfBaseVisitor<Type>
 {
 	private SymbolTable st;
 	private int error_count;
+	private ParseTreeProperty<Type> decoratedTree;
 
 	public slfChecker()
 	{
 		st = new SymbolTable();
+		decoratedTree = new ParseTreeProperty<Type>();
 		error_count = 0;
 	}
 	
@@ -18,12 +21,25 @@ public class slfChecker extends slfBaseVisitor<Type>
 		System.out.println("Error on line "+ctx.getStart().getLine()+": "+msg);
 	}
 
-	public int start(ParseTree tree)
+	public ParseTreeProperty<Type> start(ParseTree tree)
 	{
 		this.visit(tree);
-		return error_count;
+		if (error_count>0)
+		{
+			System.out.println("Compilation stopped. "+error_count+" errors found.");
+			System.exit(1);
+		}
+		return decoratedTree;
 	}
 
+	@Override
+	public Type visitProgram(slfParser.ProgramContext ctx) {
+		st.openScope();
+		visitChildren(ctx);
+		st.closeScope();
+		return Type.VOID;
+	}
+	
 	@Override
 	public Type visitWhile_statement(slfParser.While_statementContext ctx)
 	{
@@ -44,10 +60,10 @@ public class slfChecker extends slfBaseVisitor<Type>
 	public Type visitDeclaration(slfParser.DeclarationContext ctx)
 	{
 		Type type = visit(ctx.type());
+		boolean constant = ctx.CONSTANT() != null;
 		if (ctx.BECOMES() == null) // no assignment, only declaration
 		{
 			int err = 0;
-			boolean constant = ctx.CONSTANT() != null;
 			for (org.antlr.v4.runtime.tree.TerminalNode id : ctx.IDENTIFIER())
 			{
 				try
@@ -66,12 +82,25 @@ public class slfChecker extends slfBaseVisitor<Type>
 			}
 			else
 			{
+				decoratedTree.put(ctx, type);
 				return Type.VOID;
 			}
 		}
 		else
 		// declaration followed by assignment
 		{
+			for (org.antlr.v4.runtime.tree.TerminalNode id : ctx.IDENTIFIER())
+			{
+				try
+				{
+					st.enter(id.getText(), new IdEntry(constant, type));
+					st.retrieve(id.getText()).initialize();
+				}
+				catch (SymbolTableException ste)
+				{
+					error(ste.getMessage(),ctx);
+				}
+			}
 			Type exp = visit(ctx.expression());
 			if (exp != type)
 			{
@@ -80,6 +109,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 			}
 			else
 			{
+				decoratedTree.put(ctx, type);
 				return Type.VOID;
 			}
 		}
@@ -297,15 +327,21 @@ public class slfChecker extends slfBaseVisitor<Type>
 			slfParser.Assignment_expressionContext ctx)
 	{
 		String identifier = ctx.IDENTIFIER().getText();
-		Type type = st.retrieve(identifier).getType();
 		if (st.exists(identifier))
 		{
 			error("The variable " + identifier + " was not declared before assignment.",ctx);
 			return Type.ERROR;
 		}
+		else if (st.retrieve(identifier).getConstant() && st.retrieve(identifier).getInitialized())
+		{
+			error("The variable is a constant and was already initialized.",ctx);
+			return Type.ERROR;
+		}
 		else
 		{
 			Type exp = visit(ctx.expression());
+			Type type = st.retrieve(identifier).getType();
+			st.retrieve(identifier).initialize();
 			if (exp == type)
 			{
 				return type;

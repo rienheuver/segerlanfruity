@@ -1,0 +1,10 @@
+optimizer idea:
+
+new visitor extender return booleans
+	expression that is direct child of command visiten
+	only true at that expression if it is useful (its children return true)
+
+direct expressions that are useless (such as 35;) can be omitted
+build new parserrulecontext (parsetree implementation) from the useful nodes
+
+only generate code from the new builded tree
