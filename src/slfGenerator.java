@@ -6,8 +6,15 @@ public class slfGenerator extends slfBaseVisitor<String>
 	// TODO iets met scopes zodat je variabelen in een nieuwe scope opnieuw kan declareren
 	// ofwel door een nieuwe symboltable te bouwen, of door toch een annotated tree te maken in de checker
 	
-	public slfGenerator()
+	private String output;
+	
+	public slfGenerator(String filename)
 	{
+	}
+	
+	private void addCommand(String s)
+	{
+		output += s+"\n";
 	}
 	
 	public String start(ParseTree tree)
@@ -17,7 +24,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 	
 	@Override public String visitProgram(slfParser.ProgramContext ctx) {
 		// start of .j file
-		// visitchildren
+		visitChildren(ctx);
 		// end of .j file
 		return "";
 	}

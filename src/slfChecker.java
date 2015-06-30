@@ -1,18 +1,27 @@
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 public class slfChecker extends slfBaseVisitor<Type>
 {
-	SymbolTable st;
+	private SymbolTable st;
+	private int error_count;
 
 	public slfChecker()
 	{
 		st = new SymbolTable();
+		error_count = 0;
+	}
+	
+	public void error(String msg, ParserRuleContext ctx)
+	{
+		error_count++;
+		System.out.println("Error on line "+ctx.getStart().getLine()+": "+msg);
 	}
 
-	public void start(ParseTree tree)
+	public int start(ParseTree tree)
 	{
 		this.visit(tree);
+		return error_count;
 	}
 
 	@Override
@@ -21,7 +30,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp = visit(ctx.expression());
 		if (exp != Type.BOOLEAN)
 		{
-			System.out.println("while-expression should be of type BOOLEAN");
+			error("while-expression should be of type BOOLEAN",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -41,14 +50,13 @@ public class slfChecker extends slfBaseVisitor<Type>
 			boolean constant = ctx.CONSTANT() != null;
 			for (org.antlr.v4.runtime.tree.TerminalNode id : ctx.IDENTIFIER())
 			{
-				System.out.println(id.getText());
 				try
 				{
 					st.enter(id.getText(), new IdEntry(constant, type));
 				}
 				catch (SymbolTableException ste)
 				{
-					System.out.println(ste.getMessage());
+					error(ste.getMessage(),ctx);
 					err++;
 				}
 			}
@@ -67,7 +75,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 			Type exp = visit(ctx.expression());
 			if (exp != type)
 			{
-				System.out.println("The expression is not of the right type.");
+				error("The expression is not of the right type.",ctx);
 				return Type.ERROR;
 			}
 			else
@@ -84,8 +92,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp = visit(ctx.expression());
 		if (exp != Type.INTEGER)
 		{
-			System.out
-					.println("using negative requires one operand of type INTEGER");
+			error("using negative requires one operand of type INTEGER",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -100,7 +107,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp = visit(ctx.expression());
 		if (exp != Type.BOOLEAN)
 		{
-			System.out.println("negating requires one operand of type BOOLEAN");
+			error("negating requires one operand of type BOOLEAN",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -117,8 +124,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.INTEGER || exp2 != Type.INTEGER)
 		{
-			System.out
-					.println("multiplication/division requires two operands of type INTEGER");
+			error("multiplication/division requires two operands of type INTEGER",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -135,8 +141,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.INTEGER || exp2 != Type.INTEGER)
 		{
-			System.out
-					.println("add/substract requires two operands of type INTEGER");
+			error("add/substract requires two operands of type INTEGER",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -152,8 +157,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.BOOLEAN || exp2 != Type.BOOLEAN)
 		{
-			System.out
-					.println("comparing requires two operands of type BOOLEAN");
+			error("comparing requires two operands of type BOOLEAN",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -169,8 +173,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.BOOLEAN || exp2 != Type.BOOLEAN)
 		{
-			System.out
-					.println("AND-operator requires two operands of type BOOLEAN");
+			error("AND-operator requires two operands of type BOOLEAN",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -186,8 +189,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.BOOLEAN || exp2 != Type.BOOLEAN)
 		{
-			System.out
-					.println("AND-operator requires two operands of type BOOLEAN");
+			error("AND-operator requires two operands of type BOOLEAN",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -224,8 +226,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		}
 		if (err > 0)
 		{
-			System.out
-					.println("All print-expressions must have a non-void type");
+			error("All print-expressions must have a non-void type",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -249,7 +250,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp = visit(ctx.expression());
 		if (exp != Type.BOOLEAN)
 		{
-			System.out.println("if-expression should be of type boolean");
+			error("if-expression should be of type boolean",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -299,8 +300,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type type = st.retrieve(identifier).getType();
 		if (st.exists(identifier))
 		{
-			System.out.println("The variable " + identifier
-					+ " was not declared before assignment.");
+			error("The variable " + identifier + " was not declared before assignment.",ctx);
 			return Type.ERROR;
 		}
 		else
@@ -312,8 +312,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 			}
 			else
 			{
-				System.out.println("The assigned value is not of same type as "
-						+ identifier);
+				error("The assigned value is not of same type as " + identifier,ctx);
 				return Type.ERROR;
 			}
 		}
@@ -372,6 +371,14 @@ public class slfChecker extends slfBaseVisitor<Type>
 			slfParser.IDENTIFIERExpressionContext ctx)
 	{
 		String identifier = ctx.IDENTIFIER().getText();
-		return st.retrieve(identifier).getType();
+		if (!st.exists(identifier))
+		{
+			error("The variable " + identifier	+ " was not declared yet.",ctx);
+			return Type.ERROR;
+		}
+		else
+		{
+			return st.retrieve(identifier).getType();
+		}
 	}
 }
