@@ -18,15 +18,14 @@ public class slf {
 				System.exit(1);
 			}
 			
-			String outputFile = inputFile.replace(".slf", ".class");
+			String outputFile = inputFile.replace(".slf", ".j");
+			String outputFileLocation = "jasmins/"+outputFile;
 			String className = inputFile.replace(".slf", "");			
 			
 			if (className.contains("/"))
 			{
 				className = className.substring(className.lastIndexOf('/')+1);
 			}
-			
-			String fileFolder = outputFile.substring(0, outputFile.length() - className.length() - 6); // -6 for .class
 
 			CharStream input = new UnbufferedCharStream(is);
 			
@@ -50,19 +49,24 @@ public class slf {
 			slfGenerator generator = new slfGenerator(className);
 			String output = generator.start(decoratedTree, tree);
 			
+			
 			try
 			{
-				PrintWriter pw = new PrintWriter(outputFile);
+				PrintWriter pw = new PrintWriter(outputFileLocation);
 				pw.write(output);
 				pw.close();
-				fileFolder = fileFolder.length() == 0 ? "the current directory" : fileFolder;
-				System.out.println("File compiled. You can find it in "+fileFolder+" and run it from that folder by typing:");
-				System.out.println("java "+className);
 			}
 			catch (FileNotFoundException ex)
 			{
 				System.out.println(ex.getMessage());
 			}
+			
+			String[] arguments = {"-d","classes",outputFileLocation};
+			
+			// Write bytecode to file in folder /classes
+			jasmin.Main.main(arguments);
+			System.out.println("File compiled. You can find it in /classes and run it from that folder by typing:");
+			System.out.println("java "+className);
 		}
 		
 	}

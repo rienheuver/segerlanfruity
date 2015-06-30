@@ -1,14 +1,9 @@
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 public class slfGenerator extends slfBaseVisitor<String>
 {
-
-	// TODO iets met scopes zodat je variabelen in een nieuwe scope opnieuw kan
-	// declareren
-	// ofwel door een nieuwe symboltable te bouwen, of door toch een annotated
-	// tree te maken in de checker
-
 	private String filename;
 	private SymbolTable st;
 	private ParseTreeProperty<Type> decoratedTree;
@@ -61,7 +56,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += addCommand(".super java/lang/Object");
 		out += addCommand(".method public <init>()V");
 		out += addCommand("  aload_0");
-		out += addCommand("  invokeonvirtual java/lang/Object/<init>()V");
+		out += addCommand("  invokespecial java/lang/Object/<init>()V");
 		out += addCommand("  return");
 		out += addCommand(".end method");
 		out += addCommand(".method public static main([Ljava/lang/String;)V");
@@ -69,13 +64,21 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += addCommand(".limit locals 500");
 
 		st.openScope();
-		out += visitChildren(ctx);
+		for (slfParser.CommandContext cc : ctx.command())
+		{
+			out += visit(cc);
+		}
 		st.closeScope();
 
 		out += addCommand("  return");
 		out += addCommand(".end method");
 		return out;
 	}
+	
+	/*@Override
+	public String visitCommand(slfParser.CommandContext ctx) {
+		return visitChildren(ctx);
+	}*/
 
 	@Override
 	public String visitDeclaration(slfParser.DeclarationContext ctx)
@@ -119,6 +122,12 @@ public class slfGenerator extends slfBaseVisitor<String>
 			}
 			return out;
 		}
+	}
+	
+	@Override
+	public String visitLiteral_number(slfParser.Literal_numberContext ctx) {
+		String integer = ctx.LITERALNUMBER().getText();
+		return addCommand("bipush "+integer);
 	}
 
 }

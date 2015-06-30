@@ -41,6 +41,13 @@ public class slfChecker extends slfBaseVisitor<Type>
 	}
 	
 	@Override
+	public Type visitCommand(slfParser.CommandContext ctx) {
+		// we don't want to visit the semicolon in the checker nor the generator
+		ctx.removeLastChild();
+		return visitChildren(ctx);
+	}
+	
+	@Override
 	public Type visitWhile_statement(slfParser.While_statementContext ctx)
 	{
 		Type exp = visit(ctx.expression());
