@@ -125,4 +125,14 @@ public class SymbolTable
     {
         return symtab.get(id) != null && symtab.get(id).peek().getLevel() <= currentLevel();
     }
+    
+    /**
+     * returns a boolean for whether or not id is declared and initialized on the current or an underlying scope
+     * @param id, the variable-identifier
+     * @return a boolean. If id is declared and initialized on this scope or an underlying one, it's true, otherwise it's false.
+     */
+    public boolean initialized(String id)
+    {
+        return symtab.get(id) != null && symtab.get(id).peek().getLevel() <= currentLevel() && symtab.get(id).peek().getInitialized();
+    }
 }

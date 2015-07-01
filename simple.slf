@@ -1,1 +1,3 @@
-36;
+string a;
+read(a);
+print(a);

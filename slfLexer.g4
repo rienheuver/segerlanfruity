@@ -30,6 +30,7 @@ INT:			'int';
 CHAR:			'char';
 BOOLEAN:		'boolean';
 STRING:			'string';
+RETURN:			'return';
 
 //interpunction
 COLON:			':';

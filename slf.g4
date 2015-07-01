@@ -7,10 +7,12 @@ options
 
 program:				command*;
 
-command:				expression SEMICOLON
-						| while_statement SEMICOLON
-						| declaration SEMICOLON
+command:				expression SEMICOLON												#expressionCommand
+						| while_statement SEMICOLON											#whileStatementCommand
+						| declaration SEMICOLON												#declarationCommand
 						;
+
+return_expression:		RETURN expression SEMICOLON;
 
 expression:				OPAREN expression CPAREN											#closedExpression
 						| MINUS expression													#negativeExpression
@@ -33,7 +35,7 @@ expression:				OPAREN expression CPAREN											#closedExpression
 						| IDENTIFIER														#IDENTIFIERExpression
 						;
 
-while_statement:		WHILE OPAREN expression CPAREN compound_expression;
+while_statement:		WHILE OPAREN expression CPAREN OCURLY command* CCURLY;
 
 declaration:			type IDENTIFIER (COMMA IDENTIFIER)*
 						| CONSTANT? type IDENTIFIER (COMMA IDENTIFIER)* BECOMES expression;
@@ -44,7 +46,7 @@ print_expression:		PRINT OPAREN expression (COMMA expression)* CPAREN;
 
 if_expression:			IF OPAREN expression CPAREN THEN compound_expression (ELSE compound_expression)?;
 
-compound_expression:	OCURLY command+ CCURLY;
+compound_expression:	OCURLY command* return_expression CCURLY;
 
 assignment_expression:	IDENTIFIER BECOMES expression;
 

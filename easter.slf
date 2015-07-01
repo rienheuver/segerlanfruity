@@ -54,13 +54,13 @@ while (start <= end)
   if ((epact == 25 && golden > 11) || epact == 24)
   then
   {
-   epact = epact+1;
+   return epact = epact+1;
   };
   n = 44 - epact;
   if (n<21)
   then
   {
-    n = n + 30;
+    return n = n + 30;
   };
   n = n + (7 - ((d + n) % 7));
   if (n >= 32 && n != 0)
@@ -68,13 +68,13 @@ while (start <= end)
   {
     print(start);
     print(4);
-    print(n - 31);
+    return print(n - 31);
   }
   else
   {
     print(start);
     print(3);
-    print(n);
+    return print(n);
   };
   start = start+1;
 };
