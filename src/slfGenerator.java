@@ -267,7 +267,15 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += visit(ctx.expression(1));
 		if (ctx.PLUS() != null)
 		{
-			out += addCommand("iadd");
+			Type type = decoratedTree.get(ctx);
+			if (type == Type.INTEGER)
+			{
+				out += addCommand("iadd");
+			}
+			else if (type == Type.STRING)
+			{
+				out += addCommand("invokevirtual java/lang/String/concat(Ljava/lang/String;)Ljava/lang/String;");
+			}
 		}
 		else if (ctx.MINUS() != null)
 		{

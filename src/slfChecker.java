@@ -208,15 +208,21 @@ public class slfChecker extends slfBaseVisitor<Type>
 	{
 		Type exp1 = visit(ctx.expression(0));
 		Type exp2 = visit(ctx.expression(1));
-		if (exp1 != Type.INTEGER || exp2 != Type.INTEGER)
+		if (exp1 == Type.INTEGER && exp2 == Type.INTEGER)
+		{
+			decoratedTree.put(ctx, Type.INTEGER);
+			return Type.INTEGER;
+		}
+		else if (exp1 == Type.STRING && exp2 == Type.STRING && ctx.PLUS() != null)
+		{
+			decoratedTree.put(ctx, Type.STRING);
+			return Type.STRING;
+		}
+		else
 		{
 			System.out.println(ctx.expression().size());
 			error("add/substract requires two operands of type INTEGER. Types found: "+exp1.toString()+" and "+exp2.toString(), ctx);
 			return Type.ERROR;
-		}
-		else
-		{
-			return Type.INTEGER;
 		}
 	}
 
