@@ -1,0 +1,3 @@
+boolean a;
+read(a);
+print(a);

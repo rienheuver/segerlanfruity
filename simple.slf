@@ -1,3 +1,0 @@
-string a = "Hello";
-string b = "world";
-print(a + " " + b);

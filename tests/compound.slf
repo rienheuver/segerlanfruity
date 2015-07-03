@@ -1,0 +1,8 @@
+boolean c = {
+boolean a;
+read (a);
+boolean b;
+read (b);
+return true;
+};
+print(c);

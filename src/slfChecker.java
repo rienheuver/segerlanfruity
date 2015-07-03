@@ -2,12 +2,29 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+/**
+ * Klasse voor het context-checken van Seger Lan Fruity programma's.
+ * @author Sytse Hartvelt en Rien Heuver
+ *
+ */
 public class slfChecker extends slfBaseVisitor<Type>
 {
+	/**
+	 * Symboltable waarin alle variabelen, scopes e.d. worden bijgehouden.
+	 */
 	private SymbolTable st;
+	/**
+	 * Het aantal gevonden fouten tijdens het checken.
+	 */
 	private int error_count;
+	/**
+	 * Een geannoteerde boom van het programma zodat de slfGenerator extra informatie over het programma heeft.
+	 */
 	private ParseTreeProperty<Type> decoratedTree;
 
+	/**
+	 * Constructor van de klasse. Initialiseert de symboltable, geannoteerde boom en het aantal foutmeldingen.
+	 */
 	public slfChecker()
 	{
 		st = new SymbolTable();
@@ -15,6 +32,11 @@ public class slfChecker extends slfBaseVisitor<Type>
 		error_count = 0;
 	}
 
+	/**
+	 * Functie waarmee een fout aan de user gegeven wordt en het aantal fouten incrementeerd.
+	 * @param msg, de foutmelding voor de gebruiker
+	 * @param ctx, de plek in het programma waar de fout plaatsvond
+	 */
 	public void error(String msg, ParserRuleContext ctx)
 	{
 		error_count++;
@@ -22,6 +44,11 @@ public class slfChecker extends slfBaseVisitor<Type>
 				+ msg);
 	}
 
+	/**
+	 * Start het checken van het programma.
+	 * @param tree, boom van het programma gegenereerd door de slfParser
+	 * @return een geannoteerde boom met extra informatie, this.decoratedTree
+	 */
 	public ParseTreeProperty<Type> start(ParseTree tree)
 	{
 		this.visit(tree);
@@ -31,7 +58,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 					+ " errors found.");
 			System.exit(1);
 		}
-		return decoratedTree;
+		return this.decoratedTree;
 	}
 
 	@Override

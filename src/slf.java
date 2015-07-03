@@ -2,53 +2,68 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 
+/**
+ * Klasse die voor het lexen, parsen, checken en generen, oftewel compileren, van Seger Lan Fruity-programma's.
+ * @author Sytse Hartvelt en Rien Heuver
+ *
+ */
 public class slf {
 
+	/**
+	 * De functie die het gehele compilatieproces in gang zet.
+	 * @param args, het eerste argument is het programma wat gecompileert dient te worden. Er zijn geen verdere argumenten.
+	 */
 	public static void main(String[] args) {
-		System.out.println("**** Segerlan Fruity ****");
+		System.out.println("**** Seger Lan Fruity ****");
 
-		if (args.length > 0) {
+		if (args.length > 0) { // minstens 1 argument
 			String inputFile = args[0];
 			InputStream is = System.in;
 			try {
 				is = new FileInputStream(inputFile);
 			} catch (FileNotFoundException e) {
-				System.out.println("File not found: ('" + inputFile + "').");
-				System.out.println("Please ensure that this is a valid path, and that the compiler has read access.");
+				System.out.println("Bestand niet gevonden: ('" + inputFile + "').");
+				System.out.println("Zorg ervoor dat het pad naar het bestand klopt en dat Seger Lan Fruity leesrechten heeft.");
 				System.exit(1);
 			}
 			
-			String outputFile = inputFile.replace(".slf", ".j");
-			String outputFileLocation = "jasmins/"+outputFile;
-			String className = inputFile.replace(".slf", "");			
-			
-			if (className.contains("/"))
+			String outputFile = inputFile.replace(".slf", ".j"); // bestandsextensie vervangen
+			if (outputFile.contains("/")) // als het pad naar het bestand een map bevat, de rest van het pad weghalen van de naam
 			{
-				className = className.substring(className.lastIndexOf('/')+1);
+				outputFile = outputFile.substring(outputFile.lastIndexOf('/')+1);
 			}
+			String outputFileLocation = "jasmins/"+outputFile; // opslaglocatie van het jasmin-tussenbestand
+			String className = outputFile.replace(".j", ""); // classname zoals die gebruikt zal worden als naam van de klasse van het programma
 
 			CharStream input = new UnbufferedCharStream(is);
 			
-			System.out.println("Start lexing...");
-			// Start lexing
+			System.out.println("Start lexen...");
+			// Start lexen
 			slfLexer lexer = new slfLexer(input);
 			lexer.setTokenFactory(new CommonTokenFactory(true));
 			TokenStream tokens = new UnbufferedTokenStream<CommonToken>(lexer);
 			
-			System.out.println("Start parsing...");
-			// Start parsing
+			System.out.println("Start parsen...");
+			// Start parsen
 			slfParser parser = new slfParser(tokens);
 			ParseTree tree = parser.program();
+			
+			int parse_errors = parser.getNumberOfSyntaxErrors();
+			if (parse_errors>0)
+			{
+				System.out.println(parse_errors+" errors gevonden tijdens het parsen.");
+				System.exit(1);
+			}
 	
-			System.out.println("Start checking...");
-	
+			System.out.println("Start checken...");
+			// Start checken
 			slfChecker checker = new slfChecker();
 			ParseTreeProperty<Type> decoratedTree = checker.start(tree);
 			
-			System.out.println("Start generating...");
+			System.out.println("Start genereren...");
+			// Start genereren
 			slfGenerator generator = new slfGenerator(className);
 			String output = generator.start(decoratedTree, tree);
-			
 			
 			try
 			{
@@ -63,9 +78,9 @@ public class slf {
 			
 			String[] arguments = {"-d","classes",outputFileLocation};
 			
-			// Write bytecode to file in folder /classes
+			// Schrijf bytecode naar bestand in map /classes
 			jasmin.Main.main(arguments);
-			System.out.println("File compiled. You can find it in /classes and run it from that folder by typing:");
+			System.out.println("Programma gecompileerd. Je kunt hem vinden in /classes en hem draaien vanaf die map door het volgende commando te gebruiken:");
 			System.out.println("java "+className);
 		}
 		

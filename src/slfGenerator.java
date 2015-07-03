@@ -1,31 +1,59 @@
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
+/**
+ * Klasse voor het genereren van jasmin-instructies voor Seger Lan Fruity-programma's.
+ * @author Syste Hartvelt en Rien Heuver
+ *
+ */
 public class slfGenerator extends slfBaseVisitor<String>
 {
+	/**
+	 * Naam van het slf-programma
+	 */
 	private String filename;
+	/**
+	 * Symboltable waarin variabelen, scopes e.d. worden bijgehouden
+	 */
 	private SymbolTable st;
+	/**
+	 * Geannoteerde boom met extra informatie over typen bij bepaalde delen van de boom.
+	 */
 	private ParseTreeProperty<Type> decoratedTree;
+	/**
+	 * Teller van het aantal variabelen. Wordt gebruikt om unieke geheugennummers te maken voor variabelen.
+	 */
 	private int var_counter = 0;
+	/**
+	 * Teller van het aantal labels. Wordt gebruikt om unieke labels te genereren.
+	 */
 	private int labelcounter = 0;
 
+	/**
+	 * Constructor van de klasse. Initialiseert de naam van het programma.
+	 * @param filename, de naam van het programma
+	 */
 	public slfGenerator(String filename)
 	{
 		st = new SymbolTable();
 		this.filename = filename;
 	}
 
+	/**
+	 * Functie om eenvoudiger instructies aan te maken
+	 * @param s, de instructie zelf
+	 * @return De instructie met een newline
+	 */
 	private String addCommand(String s)
 	{
 		return s + "\n";
 	}
 
 	/**
-	 * 
-	 * @param t
-	 * @param i
-	 *            , mem_id
-	 * @return
+	 * Genereert instructies om variabelen op te slaan.
+	 * @param t, de type variabele
+	 * @param i, het geheugennummer van de variabele
+	 * @return een instructie waarmee de variabele opgeslagen kan worden
 	 */
 	private String var_store(Type t, int i)
 	{
@@ -49,12 +77,21 @@ public class slfGenerator extends slfBaseVisitor<String>
 		return out;
 	}
 
+	/**
+	 * Genereert een uniek label
+	 * @return, een uniek label
+	 */
 	private String newLabel()
 	{
 		labelcounter++;
 		return "Label" + labelcounter;
 	}
 
+	/**
+	 * Genereert instructies om statische tekst naar het scherm te outputten.
+	 * @param s, de tekst om te outputten
+	 * @return, instructies om de tekst te outputten
+	 */
 	private String printString(String s)
 	{
 		String out = addCommand("getstatic java/lang/System/out Ljava/io/PrintStream;");
@@ -63,6 +100,12 @@ public class slfGenerator extends slfBaseVisitor<String>
 		return out;
 	}
 
+	/**
+	 * Start het genereren van instructies voor slf-programma's
+	 * @param decoratedTree, de geannoteerde boom, gegenereerd door de slfChecker
+	 * @param tree, de originele boom, gegenereerd door de slfParser
+	 * @return een lijst van jasmin-instructies die het gehele programma beschrijven
+	 */
 	public String start(ParseTreeProperty<Type> decoratedTree, ParseTree tree)
 	{
 		this.decoratedTree = decoratedTree;
@@ -369,16 +412,16 @@ public class slfGenerator extends slfBaseVisitor<String>
 			switch (type)
 			{
 				case STRING:
-					out += printString("Please insert a string:");
+					out += printString("Voer een karakterreeks in");
 					break;
 				case BOOLEAN:
-					out += printString("Please insert a boolean (true/false):");
+					out += printString("Voer een boolse waarde in");
 					break;
 				case INTEGER:
-					out += printString("Please insert an integer:");
+					out += printString("Voer een geheel getal in");
 					break;
 				case CHARACTER:
-					out += printString("Please insert a character:");
+					out += printString("Voer een karakter in");
 					break;
 				default:
 					throw new IllegalArgumentException(
@@ -393,7 +436,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 
 				case BOOLEAN:
 					out += addCommand("ldc \"true\"");
-					out += addCommand("invokevirtual java/lang/String/equals(Ljava/lang/String;)I");
+					out += addCommand("invokevirtual java/lang/String/equals(Ljava/lang/Object;)Z");
 					break;
 
 				case INTEGER:

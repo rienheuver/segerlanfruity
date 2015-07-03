@@ -1,7 +1,6 @@
 /**
- * 
- * @author Sytse en Rien Klasse voor het bijhouden van diverse gegevens van
- *         variabelen in een SymbolTable.
+ * Klasse voor het bijhouden van diverse gegevens van variabelen in een SymbolTable.
+ * @author Sytse Hartvelt en Rien Heuver
  */
 public class IdEntry
 {
