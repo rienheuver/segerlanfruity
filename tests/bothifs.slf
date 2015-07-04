@@ -1,0 +1,13 @@
+if (true)
+{
+	boolean b;
+	read(b);
+	if (b)
+	{
+		return true;
+	};
+}
+else
+{
+	print("hoi");
+};

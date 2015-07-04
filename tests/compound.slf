@@ -3,6 +3,6 @@ boolean a;
 read (a);
 boolean b;
 read (b);
-return true;
+return (a || b) && (b && a);
 };
 print(c);

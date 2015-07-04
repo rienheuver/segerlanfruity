@@ -1,0 +1,3 @@
+// b is undeclared
+boolean a = true;
+print(b);

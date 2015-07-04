@@ -52,19 +52,16 @@ while (start <= end)
   d = (5 * start / 4) - x - 10;
   epact = ((11 * golden) + 20 + z - x * 11) % 30;
   if ((epact == 25 && golden > 11) || epact == 24)
-  then
   {
    return epact = epact+1;
   };
   n = 44 - epact;
   if (n<21)
-  then
   {
     return n = n + 30;
   };
   n = n + (7 - ((d + n) % 7));
   if (n >= 32 && n != 0)
-  then
   {
     print(start);
     print(4);

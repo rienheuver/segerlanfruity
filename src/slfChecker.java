@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 /**
  * Klasse voor het context-checken van Seger Lan Fruity programma's.
+ * 
  * @author Sytse Hartvelt en Rien Heuver
  *
  */
@@ -18,12 +19,14 @@ public class slfChecker extends slfBaseVisitor<Type>
 	 */
 	private int error_count;
 	/**
-	 * Een geannoteerde boom van het programma zodat de slfGenerator extra informatie over het programma heeft.
+	 * Een geannoteerde boom van het programma zodat de slfGenerator extra
+	 * informatie over het programma heeft.
 	 */
 	private ParseTreeProperty<Type> decoratedTree;
 
 	/**
-	 * Constructor van de klasse. Initialiseert de symboltable, geannoteerde boom en het aantal foutmeldingen.
+	 * Constructor van de klasse. Initialiseert de symboltable, geannoteerde
+	 * boom en het aantal foutmeldingen.
 	 */
 	public slfChecker()
 	{
@@ -33,20 +36,25 @@ public class slfChecker extends slfBaseVisitor<Type>
 	}
 
 	/**
-	 * Functie waarmee een fout aan de user gegeven wordt en het aantal fouten incrementeerd.
-	 * @param msg, de foutmelding voor de gebruiker
-	 * @param ctx, de plek in het programma waar de fout plaatsvond
+	 * Functie waarmee een fout aan de user gegeven wordt en het aantal fouten
+	 * incrementeerd.
+	 * 
+	 * @param msg,
+	 *            de foutmelding voor de gebruiker
+	 * @param ctx,
+	 *            de plek in het programma waar de fout plaatsvond
 	 */
 	public void error(String msg, ParserRuleContext ctx)
 	{
 		error_count++;
-		System.out.println("Error on line " + ctx.getStart().getLine() + ": "
-				+ msg);
+		System.out.println("Error on line " + ctx.getStart().getLine() + ": " + msg);
 	}
 
 	/**
 	 * Start het checken van het programma.
-	 * @param tree, boom van het programma gegenereerd door de slfParser
+	 * 
+	 * @param tree,
+	 *            boom van het programma gegenereerd door de slfParser
 	 * @return een geannoteerde boom met extra informatie, this.decoratedTree
 	 */
 	public ParseTreeProperty<Type> start(ParseTree tree)
@@ -54,8 +62,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		this.visit(tree);
 		if (error_count > 0)
 		{
-			System.out.println("Compilation stopped. " + error_count
-					+ " errors found.");
+			System.out.println("Compilation stopped. " + error_count + " errors found.");
 			System.exit(1);
 		}
 		return this.decoratedTree;
@@ -71,8 +78,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 	}
 
 	@Override
-	public Type visitWhileStatementCommand(
-			slfParser.WhileStatementCommandContext ctx)
+	public Type visitWhileStatementCommand(slfParser.WhileStatementCommandContext ctx)
 	{
 		return visit(ctx.while_statement());
 	}
@@ -98,22 +104,36 @@ public class slfChecker extends slfBaseVisitor<Type>
 	}
 
 	@Override
+	public Type visitIf_statement(slfParser.If_statementContext ctx)
+	{
+		Type exp = visit(ctx.expression());
+		if (exp != Type.BOOLEAN)
+		{
+			error("expression of if should be of type BOOLEAN. Type found: " + exp.toString(), ctx);
+			return Type.ERROR;
+		}
+		else
+		{
+			for (slfParser.ProgramContext pc : ctx.program())
+			{
+				visit(pc);
+			}
+			return Type.VOID; // if-statement is always type void
+		}
+	}
+
+	@Override
 	public Type visitWhile_statement(slfParser.While_statementContext ctx)
 	{
 		Type exp = visit(ctx.expression());
 		if (exp != Type.BOOLEAN)
 		{
-			error("while-expression should be of type BOOLEAN. Type found: "+exp.toString(), ctx);
+			error("expression of while should be of type BOOLEAN. Type found: " + exp.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
 		{
-			st.openScope();
-			for (slfParser.CommandContext cc : ctx.command())
-			{
-				visit(cc);
-			}
-			st.closeScope();
+			visit(ctx.program());
 			return Type.VOID; // while-statement is always type void
 		}
 	}
@@ -166,7 +186,8 @@ public class slfChecker extends slfBaseVisitor<Type>
 			Type exp = visit(ctx.expression());
 			if (exp != type)
 			{
-				error("The expression is not of the right type. Type found: "+exp.toString()+". Type expected: "+type.toString(), ctx);
+				error("The expression is not of the right type. Type found: " + exp.toString() + ". Type expected: "
+						+ type.toString(), ctx);
 				return Type.ERROR;
 			}
 			else
@@ -176,7 +197,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 			}
 		}
 	}
-	
+
 	@Override
 	public Type visitClosedExpression(slfParser.ClosedExpressionContext ctx)
 	{
@@ -189,7 +210,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp = visit(ctx.expression());
 		if (exp != Type.INTEGER)
 		{
-			error("using negative requires one operand of type INTEGER. Type found: "+exp.toString(), ctx);
+			error("using negative requires one operand of type INTEGER. Type found: " + exp.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
@@ -204,7 +225,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp = visit(ctx.expression());
 		if (exp != Type.BOOLEAN)
 		{
-			error("negating requires one operand of type BOOLEAN. Type found: "+exp.toString(), ctx);
+			error("negating requires one operand of type BOOLEAN. Type found: " + exp.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
@@ -220,8 +241,8 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.INTEGER || exp2 != Type.INTEGER)
 		{
-			error("multiplication/division requires two operands of type INTEGER. Types found: "+exp1.toString()+" and "+exp2.toString(),
-					ctx);
+			error("multiplication/division requires two operands of type INTEGER. Types found: " + exp1.toString()
+					+ " and " + exp2.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
@@ -248,7 +269,8 @@ public class slfChecker extends slfBaseVisitor<Type>
 		else
 		{
 			System.out.println(ctx.expression().size());
-			error("add/substract requires two operands of type INTEGER. Types found: "+exp1.toString()+" and "+exp2.toString(), ctx);
+			error("add/substract requires two operands of type INTEGER. Types found: " + exp1.toString() + " and "
+					+ exp2.toString(), ctx);
 			return Type.ERROR;
 		}
 	}
@@ -260,7 +282,8 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.INTEGER || exp2 != Type.INTEGER)
 		{
-			error("comparing requires two operands of type INTEGER. Types found: "+exp1.toString()+" and "+exp2.toString(), ctx);
+			error("comparing requires two operands of type INTEGER. Types found: " + exp1.toString() + " and "
+					+ exp2.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
@@ -276,7 +299,8 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.BOOLEAN || exp2 != Type.BOOLEAN)
 		{
-			error("AND-operator requires two operands of type BOOLEAN. Types found: "+exp1.toString()+" and "+exp2.toString(), ctx);
+			error("AND-operator requires two operands of type BOOLEAN. Types found: " + exp1.toString() + " and "
+					+ exp2.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
@@ -292,7 +316,8 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp2 = visit(ctx.expression(1));
 		if (exp1 != Type.BOOLEAN || exp2 != Type.BOOLEAN)
 		{
-			error("AND-operator requires two operands of type BOOLEAN. Types found: "+exp1.toString()+" and "+exp2.toString(), ctx);
+			error("AND-operator requires two operands of type BOOLEAN. Types found: " + exp1.toString() + " and "
+					+ exp2.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
@@ -305,8 +330,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 	public Type visitRead_expression(slfParser.Read_expressionContext ctx)
 	{
 		int err = 0;
-		for (org.antlr.v4.runtime.tree.TerminalNode identifier : ctx
-				.IDENTIFIER())
+		for (org.antlr.v4.runtime.tree.TerminalNode identifier : ctx.IDENTIFIER())
 		{
 			if (!st.exists(identifier.getText()))
 			{
@@ -372,7 +396,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		Type exp = visit(ctx.expression());
 		if (exp != Type.BOOLEAN)
 		{
-			error("if-expression should be of type boolean. Type found: "+exp.toString(), ctx);
+			error("if-expression should be of type boolean. Type found: " + exp.toString(), ctx);
 			return Type.ERROR;
 		}
 		else
@@ -401,35 +425,25 @@ public class slfChecker extends slfBaseVisitor<Type>
 	}
 
 	@Override
-	public Type visitCompound_expression(
-			slfParser.Compound_expressionContext ctx)
+	public Type visitCompound_expression(slfParser.Compound_expressionContext ctx)
 	{
-		st.openScope();
-		for (slfParser.CommandContext cc : ctx.command())
-		{
-			visit(cc);
-		}
+		visit(ctx.program());
 		Type type = visit(ctx.return_expression());
-		st.closeScope();
 		return type;
 	}
 
 	@Override
-	public Type visitAssignment_expression(
-			slfParser.Assignment_expressionContext ctx)
+	public Type visitAssignment_expression(slfParser.Assignment_expressionContext ctx)
 	{
 		String identifier = ctx.IDENTIFIER().getText();
 		if (!st.exists(identifier))
 		{
-			error("The variable " + identifier
-					+ " was not declared before assignment.", ctx);
+			error("The variable " + identifier + " was not declared before assignment.", ctx);
 			return Type.ERROR;
 		}
-		else if (st.retrieve(identifier).getConstant()
-				&& st.retrieve(identifier).getInitialized())
+		else if (st.retrieve(identifier).getConstant() && st.retrieve(identifier).getInitialized())
 		{
-			error("The variable is a constant and was already initialized.",
-					ctx);
+			error("The variable is a constant and was already initialized.", ctx);
 			return Type.ERROR;
 		}
 		else
@@ -444,8 +458,8 @@ public class slfChecker extends slfBaseVisitor<Type>
 			}
 			else
 			{
-				error("The assigned value is not of same type as " + identifier+". Type found: "+exp.toString()+". Type expected: "+type.toString(),
-						ctx);
+				error("The assigned value is not of same type as " + identifier + ". Type found: " + exp.toString()
+						+ ". Type expected: " + type.toString(), ctx);
 				return Type.ERROR;
 			}
 		}
@@ -500,13 +514,17 @@ public class slfChecker extends slfBaseVisitor<Type>
 	}
 
 	@Override
-	public Type visitIDENTIFIERExpression(
-			slfParser.IDENTIFIERExpressionContext ctx)
+	public Type visitIDENTIFIERExpression(slfParser.IDENTIFIERExpressionContext ctx)
 	{
 		String identifier = ctx.IDENTIFIER().getText();
 		if (!st.exists(identifier))
 		{
 			error("The variable " + identifier + " was not declared yet.", ctx);
+			return Type.ERROR;
+		}
+		else if (!st.initialized(identifier))
+		{
+			error("The variable " + identifier + " was not initialized yet.", ctx);
 			return Type.ERROR;
 		}
 		else

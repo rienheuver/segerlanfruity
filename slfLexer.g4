@@ -23,7 +23,6 @@ CONSTANT:		'constant';
 PRINT:			'print';
 READ:			'read';
 IF:				'if';
-THEN:			'then';
 ELSE:			'else';
 WHILE:			'while';
 INT:			'int';
@@ -43,8 +42,8 @@ COMMA:			',';
 
 // values
 LITERALBOOLEAN:		'true' | 'false';
-LITERALSTRING:			'"' ('\\"' | '\\\\' | ~('\n'|'\r') )*? '"'; // "string" escapes \" and \\
-LITERALCHARACTER:		'\'' ( '\\\'' | ~('\n'|'\r') )*? '\''; // 'c' escapes '\''
+LITERALSTRING:			'"' ('\\"' | '\\\\' | ~('\n'|'\r') )*? '"'; // escapes \\ and \"
+LITERALCHARACTER:		'\'' ( '\\\'' | ~('\n'|'\r') )*? '\''; // escapes ' and \'
 LITERALNUMBER:			DIGIT+;
 
 IDENTIFIER:				LETTER (LETTER | DIGIT)*;

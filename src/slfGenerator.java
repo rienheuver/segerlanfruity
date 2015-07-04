@@ -2,7 +2,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 /**
- * Klasse voor het genereren van jasmin-instructies voor Seger Lan Fruity-programma's.
+ * Klasse voor het genereren van jasmin-instructies voor Seger Lan
+ * Fruity-programma's.
+ * 
  * @author Syste Hartvelt en Rien Heuver
  *
  */
@@ -17,21 +19,26 @@ public class slfGenerator extends slfBaseVisitor<String>
 	 */
 	private SymbolTable st;
 	/**
-	 * Geannoteerde boom met extra informatie over typen bij bepaalde delen van de boom.
+	 * Geannoteerde boom met extra informatie over typen bij bepaalde delen van
+	 * de boom.
 	 */
 	private ParseTreeProperty<Type> decoratedTree;
 	/**
-	 * Teller van het aantal variabelen. Wordt gebruikt om unieke geheugennummers te maken voor variabelen.
+	 * Teller van het aantal variabelen. Wordt gebruikt om unieke
+	 * geheugennummers te maken voor variabelen.
 	 */
-	private int var_counter = 0;
+	private int var_counter = 1;
 	/**
-	 * Teller van het aantal labels. Wordt gebruikt om unieke labels te genereren.
+	 * Teller van het aantal labels. Wordt gebruikt om unieke labels te
+	 * genereren.
 	 */
 	private int labelcounter = 0;
 
 	/**
 	 * Constructor van de klasse. Initialiseert de naam van het programma.
-	 * @param filename, de naam van het programma
+	 * 
+	 * @param filename,
+	 *            de naam van het programma
 	 */
 	public slfGenerator(String filename)
 	{
@@ -41,7 +48,9 @@ public class slfGenerator extends slfBaseVisitor<String>
 
 	/**
 	 * Functie om eenvoudiger instructies aan te maken
-	 * @param s, de instructie zelf
+	 * 
+	 * @param s,
+	 *            de instructie zelf
 	 * @return De instructie met een newline
 	 */
 	private String addCommand(String s)
@@ -51,8 +60,11 @@ public class slfGenerator extends slfBaseVisitor<String>
 
 	/**
 	 * Genereert instructies om variabelen op te slaan.
-	 * @param t, de type variabele
-	 * @param i, het geheugennummer van de variabele
+	 * 
+	 * @param t,
+	 *            de type variabele
+	 * @param i,
+	 *            het geheugennummer van de variabele
 	 * @return een instructie waarmee de variabele opgeslagen kan worden
 	 */
 	private String var_store(Type t, int i)
@@ -78,8 +90,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 	}
 
 	/**
-	 * Genereert een uniek label
-	 * @return, een uniek label
+	 * Genereert een uniek label @return, een uniek label
 	 */
 	private String newLabel()
 	{
@@ -89,8 +100,10 @@ public class slfGenerator extends slfBaseVisitor<String>
 
 	/**
 	 * Genereert instructies om statische tekst naar het scherm te outputten.
-	 * @param s, de tekst om te outputten
-	 * @return, instructies om de tekst te outputten
+	 * 
+	 * @param s,
+	 *            de tekst om te outputten @return, instructies om de tekst te
+	 *            outputten
 	 */
 	private String printString(String s)
 	{
@@ -102,24 +115,22 @@ public class slfGenerator extends slfBaseVisitor<String>
 
 	/**
 	 * Start het genereren van instructies voor slf-programma's
-	 * @param decoratedTree, de geannoteerde boom, gegenereerd door de slfChecker
-	 * @param tree, de originele boom, gegenereerd door de slfParser
-	 * @return een lijst van jasmin-instructies die het gehele programma beschrijven
+	 * 
+	 * @param decoratedTree,
+	 *            de geannoteerde boom, gegenereerd door de slfChecker
+	 * @param tree,
+	 *            de originele boom, gegenereerd door de slfParser
+	 * @return een lijst van jasmin-instructies die het gehele programma
+	 *         beschrijven
 	 */
 	public String start(ParseTreeProperty<Type> decoratedTree, ParseTree tree)
 	{
 		this.decoratedTree = decoratedTree;
-		return this.visit(tree);
-	}
-
-	@Override
-	public String visitProgram(slfParser.ProgramContext ctx)
-	{
 		String out = "";
 		out += addCommand(".class public " + filename);
 		out += addCommand(".super java/lang/Object");
 		out += addCommand(".method public <init>()V");
-		out += addCommand("  aload_0");
+		out += addCommand("  aload 0");
 		out += addCommand("  invokespecial java/lang/Object/<init>()V");
 		out += addCommand("  return");
 		out += addCommand(".end method");
@@ -132,26 +143,34 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += addCommand("dup");
 		out += addCommand("getstatic java/lang/System/in Ljava/io/InputStream;");
 		out += addCommand("invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
-		out += addCommand("astore 0");
+		out += addCommand("astore 1");
 
 		out += addCommand("; start of actual program");
+		
+		out += visit(tree);
+		
+		out += addCommand("; end of actual program");
+		out += addCommand("return");
+		out += addCommand(".end method");
+		
+		return out;
+	}
 
+	@Override
+	public String visitProgram(slfParser.ProgramContext ctx)
+	{
+		String out = "";
 		st.openScope();
 		for (slfParser.CommandContext cc : ctx.command())
 		{
 			out += visit(cc);
 		}
 		st.closeScope();
-
-		out += addCommand("; end of actual program");
-		out += addCommand("return");
-		out += addCommand(".end method");
 		return out;
 	}
 
 	@Override
-	public String visitWhileStatementCommand(
-			slfParser.WhileStatementCommandContext ctx)
+	public String visitWhileStatementCommand(slfParser.WhileStatementCommandContext ctx)
 	{
 		return visit(ctx.while_statement());
 	}
@@ -169,10 +188,37 @@ public class slfGenerator extends slfBaseVisitor<String>
 	}
 
 	@Override
-	public String visitDeclarationCommand(
-			slfParser.DeclarationCommandContext ctx)
+	public String visitDeclarationCommand(slfParser.DeclarationCommandContext ctx)
 	{
 		return visit(ctx.declaration());
+	}
+
+	@Override
+	public String visitIf_statement(slfParser.If_statementContext ctx)
+	{
+		if (ctx.ELSE() != null)
+		{
+			String elseLabel = newLabel();
+			String continueLabel = newLabel();
+			String out = visit(ctx.expression());
+			out += addCommand("ifeq " + elseLabel);
+			out += visit(ctx.program(0));
+			out += addCommand("goto " + continueLabel);
+			out += addCommand(elseLabel + ":");
+			out += visit(ctx.program(1));
+			out += addCommand(continueLabel + ":");
+			return out;
+		}
+		else
+		{
+			String continueLabel = newLabel();
+			String out = visit(ctx.expression());
+			out += addCommand("ifeq " + continueLabel);
+			out += visit(ctx.program(0));
+			out += addCommand("pop");
+			out += addCommand(continueLabel + ":");
+			return out;
+		}
 	}
 
 	@Override
@@ -181,18 +227,15 @@ public class slfGenerator extends slfBaseVisitor<String>
 		String whileLabel = newLabel();
 		String falseLabel = newLabel();
 		labelcounter++;
-		String out = addCommand(whileLabel+":");
+		String out = addCommand(whileLabel + ":");
 		out += visit(ctx.expression());
 		out += addCommand("ifeq " + falseLabel);
-		for (slfParser.CommandContext cc : ctx.command())
-		{
-			out += visit(cc);
-		}
+		out += visit(ctx.program());
 		out += addCommand("goto " + whileLabel);
-		out += addCommand(falseLabel+":");
+		out += addCommand(falseLabel + ":");
 		return out;
 	}
-	
+
 	@Override
 	public String visitReturn_expression(slfParser.Return_expressionContext ctx)
 	{
@@ -204,7 +247,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 	{
 		Type type = decoratedTree.get(ctx);
 		boolean constant = ctx.CONSTANT() != null;
-		if (ctx.BECOMES() == null) // no assignment, only declaration
+		if (ctx.BECOMES() == null) // geen toewijzing, alleen declaratie
 		{
 			for (org.antlr.v4.runtime.tree.TerminalNode id : ctx.IDENTIFIER())
 			{
@@ -221,7 +264,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 			}
 			return "";
 		}
-		else
+		else // declaratie met toewijzing
 		{
 			String out = "";
 			for (org.antlr.v4.runtime.tree.TerminalNode id : ctx.IDENTIFIER())
@@ -237,7 +280,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 					System.out.println(ste.getMessage());
 				}
 				out += visit(ctx.expression());
-				out += var_store(type, var_counter);
+				out += var_store(type, st.retrieve(id.getText()).getMemId());
 			}
 			return out;
 		}
@@ -250,8 +293,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 	}
 
 	@Override
-	public String visitNegativeExpression(
-			slfParser.NegativeExpressionContext ctx)
+	public String visitNegativeExpression(slfParser.NegativeExpressionContext ctx)
 	{
 		String out = visit(ctx.expression());
 		out += addCommand("ineg");
@@ -267,15 +309,14 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += addCommand("ifne " + falseLabel);
 		out += addCommand("iconst_1");
 		out += addCommand("goto " + continueLabel);
-		out += addCommand(falseLabel+":");
+		out += addCommand(falseLabel + ":");
 		out += addCommand("iconst_0");
-		out += addCommand(continueLabel+":");
+		out += addCommand(continueLabel + ":");
 		return out;
 	}
 
 	@Override
-	public String visitMultiplyExpression(
-			slfParser.MultiplyExpressionContext ctx)
+	public String visitMultiplyExpression(slfParser.MultiplyExpressionContext ctx)
 	{
 		String out = visit(ctx.expression(0));
 		out += visit(ctx.expression(1));
@@ -292,7 +333,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 			out += addCommand("iconst_1");
 			out += addCommand("invokestatic java/lang/System/exit(I)V");
 			out += addCommand("return");
-			out += addCommand(label+":");
+			out += addCommand(label + ":");
 			out += addCommand("idiv");
 		}
 		else if (ctx.MODULO() != null)
@@ -303,8 +344,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 	}
 
 	@Override
-	public String visitAdditionExpression(
-			slfParser.AdditionExpressionContext ctx)
+	public String visitAdditionExpression(slfParser.AdditionExpressionContext ctx)
 	{
 		String out = visit(ctx.expression(0));
 		out += visit(ctx.expression(1));
@@ -336,33 +376,33 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += visit(ctx.expression(1));
 		if (ctx.LT() != null)
 		{
-			out += addCommand("if_icmplt "+trueLabel);
+			out += addCommand("if_icmplt " + trueLabel);
 		}
 		else if (ctx.LTE() != null)
 		{
-			out += addCommand("if_icmple "+trueLabel);
+			out += addCommand("if_icmple " + trueLabel);
 		}
 		else if (ctx.GT() != null)
 		{
-			out += addCommand("if_icmpgt "+trueLabel);
+			out += addCommand("if_icmpgt " + trueLabel);
 		}
 		else if (ctx.GTE() != null)
 		{
-			out += addCommand("if_icmpge "+trueLabel);
+			out += addCommand("if_icmpge " + trueLabel);
 		}
 		else if (ctx.EQUALS() != null)
 		{
-			out += addCommand("if_icmpeq "+trueLabel);
+			out += addCommand("if_icmpeq " + trueLabel);
 		}
 		else if (ctx.UNEQUALS() != null)
 		{
-			out += addCommand("if_icmpne "+trueLabel);
+			out += addCommand("if_icmpne " + trueLabel);
 		}
 		out += addCommand("iconst_0");
 		out += addCommand("goto " + continueLabel);
-		out += addCommand(trueLabel+":");
+		out += addCommand(trueLabel + ":");
 		out += addCommand("iconst_1");
-		out += addCommand(continueLabel+":");
+		out += addCommand(continueLabel + ":");
 		return out;
 	}
 
@@ -377,9 +417,9 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += addCommand("ifeq " + falseLabel); // if false, jump
 		out += addCommand("iconst_1"); // both true, thus true
 		out += addCommand("goto " + continueLabel); // continue program
-		out += addCommand(falseLabel+":");
+		out += addCommand(falseLabel + ":");
 		out += addCommand("iconst_0"); // either was false, thus false
-		out += addCommand(continueLabel+":");
+		out += addCommand(continueLabel + ":");
 		return out;
 	}
 
@@ -394,9 +434,9 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += addCommand("ifne " + trueLabel); // if true, jump
 		out += addCommand("iconst_0"); // both false, thus false
 		out += addCommand("goto " + continueLabel); // continue program
-		out += addCommand(trueLabel+":");
+		out += addCommand(trueLabel + ":");
 		out += addCommand("iconst_1"); // either was true, thus true
-		out += addCommand(continueLabel+":");
+		out += addCommand(continueLabel + ":");
 		return out;
 	}
 
@@ -405,8 +445,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 	{
 		Type type = Type.ERROR;
 		String out = "";
-		for (org.antlr.v4.runtime.tree.TerminalNode identifier : ctx
-				.IDENTIFIER())
+		for (org.antlr.v4.runtime.tree.TerminalNode identifier : ctx.IDENTIFIER())
 		{
 			type = st.retrieve(identifier.getText()).getType();
 			switch (type)
@@ -427,7 +466,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 					throw new IllegalArgumentException(
 							"Something unlikely happened. You entered a non-existing type to be read.");
 			}
-			out += addCommand("aload 0");
+			out += addCommand("aload 1");
 			out += addCommand("invokevirtual java/util/Scanner/nextLine()Ljava/lang/String;");
 			switch (type)
 			{
@@ -460,15 +499,13 @@ public class slfGenerator extends slfBaseVisitor<String>
 			switch (type)
 			{
 				case STRING:
-					out += addCommand("astore "
-							+ st.retrieve(identifier.getText()).getMemId());
+					out += addCommand("astore " + st.retrieve(identifier.getText()).getMemId());
 					break;
 
 				case BOOLEAN:
 				case INTEGER:
 				case CHARACTER:
-					out += addCommand("istore "
-							+ st.retrieve(identifier.getText()).getMemId());
+					out += addCommand("istore " + st.retrieve(identifier.getText()).getMemId());
 					break;
 
 				default:
@@ -521,10 +558,11 @@ public class slfGenerator extends slfBaseVisitor<String>
 
 				default:
 					throw new IllegalArgumentException(
-							"Something unlikely happened. You entered a non-existing type to be printed. Type found: "+type.toString());
-			} 
+							"Something unlikely happened. You entered a non-existing type to be printed. Type found: "
+									+ type.toString());
+			}
 		}
-		if (ctx.expression().size()>1)
+		if (ctx.expression().size() > 1)
 		{
 			out += addCommand("pop");
 		}
@@ -542,9 +580,9 @@ public class slfGenerator extends slfBaseVisitor<String>
 			out += addCommand("ifeq " + elseLabel);
 			out += visit(ctx.compound_expression(0));
 			out += addCommand("goto " + continueLabel);
-			out += addCommand(elseLabel+":");
+			out += addCommand(elseLabel + ":");
 			out += visit(ctx.compound_expression(1));
-			out += addCommand(continueLabel+":");
+			out += addCommand(continueLabel + ":");
 			return out;
 		}
 		else
@@ -554,27 +592,22 @@ public class slfGenerator extends slfBaseVisitor<String>
 			out += addCommand("ifeq " + continueLabel);
 			out += visit(ctx.compound_expression(0));
 			out += addCommand("pop");
-			out += addCommand(continueLabel+":");
+			out += addCommand(continueLabel + ":");
 			return out;
 		}
 	}
 
 	@Override
-	public String visitCompound_expression(
-			slfParser.Compound_expressionContext ctx)
+	public String visitCompound_expression(slfParser.Compound_expressionContext ctx)
 	{
 		String out = "";
-		for (slfParser.CommandContext cc : ctx.command())
-		{
-			out += visit(cc);
-		}
+		visit(ctx.program());
 		out += visit(ctx.return_expression());
 		return out;
 	}
 
 	@Override
-	public String visitAssignment_expression(
-			slfParser.Assignment_expressionContext ctx)
+	public String visitAssignment_expression(slfParser.Assignment_expressionContext ctx)
 	{
 		String out = visit(ctx.expression());
 		IdEntry variable = st.retrieve(ctx.IDENTIFIER().getText());
@@ -619,25 +652,24 @@ public class slfGenerator extends slfBaseVisitor<String>
 	}
 
 	@Override
-	public String visitIDENTIFIERExpression(
-			slfParser.IDENTIFIERExpressionContext ctx)
+	public String visitIDENTIFIERExpression(slfParser.IDENTIFIERExpressionContext ctx)
 	{
 		String out = "";
 		int mem_id = st.retrieve(ctx.IDENTIFIER().getText()).getMemId();
-		switch (decoratedTree.get(ctx)){
+		switch (decoratedTree.get(ctx))
+		{
 			case STRING:
-				out = addCommand("aload "+mem_id);
+				out = addCommand("aload " + mem_id);
 				break;
-				
+
 			case BOOLEAN:
 			case CHARACTER:
 			case INTEGER:
-				out = addCommand("iload "+mem_id);
+				out = addCommand("iload " + mem_id);
 				break;
-			
+
 			default:
-				throw new IllegalArgumentException(
-						"Something unlikely happened. Your variable has no known type.");
+				throw new IllegalArgumentException("Something unlikely happened. Your variable has no known type.");
 		}
 		return out;
 	}
