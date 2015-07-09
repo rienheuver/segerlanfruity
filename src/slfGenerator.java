@@ -146,13 +146,13 @@ public class slfGenerator extends slfBaseVisitor<String>
 		out += addCommand("astore 1");
 
 		out += addCommand("; start of actual program");
-		
+
 		out += visit(tree);
-		
+
 		out += addCommand("; end of actual program");
 		out += addCommand("return");
 		out += addCommand(".end method");
-		
+
 		return out;
 	}
 
@@ -167,6 +167,12 @@ public class slfGenerator extends slfBaseVisitor<String>
 		}
 		st.closeScope();
 		return out;
+	}
+
+	@Override
+	public String visitIfStatementCommand(slfParser.IfStatementCommandContext ctx)
+	{
+		return visit(ctx.if_statement());
 	}
 
 	@Override
@@ -374,29 +380,44 @@ public class slfGenerator extends slfBaseVisitor<String>
 		String continueLabel = newLabel();
 		String out = visit(ctx.expression(0));
 		out += visit(ctx.expression(1));
-		if (ctx.LT() != null)
+		Type type = decoratedTree.get(ctx);
+		switch (type)
 		{
-			out += addCommand("if_icmplt " + trueLabel);
-		}
-		else if (ctx.LTE() != null)
-		{
-			out += addCommand("if_icmple " + trueLabel);
-		}
-		else if (ctx.GT() != null)
-		{
-			out += addCommand("if_icmpgt " + trueLabel);
-		}
-		else if (ctx.GTE() != null)
-		{
-			out += addCommand("if_icmpge " + trueLabel);
-		}
-		else if (ctx.EQUALS() != null)
-		{
-			out += addCommand("if_icmpeq " + trueLabel);
-		}
-		else if (ctx.UNEQUALS() != null)
-		{
-			out += addCommand("if_icmpne " + trueLabel);
+			case INTEGER:
+			case BOOLEAN:
+			case CHARACTER:
+				if (ctx.LT() != null)
+				{
+					out += addCommand("if_icmplt " + trueLabel);
+				}
+				else if (ctx.LTE() != null)
+				{
+					out += addCommand("if_icmple " + trueLabel);
+				}
+				else if (ctx.GT() != null)
+				{
+					out += addCommand("if_icmpgt " + trueLabel);
+				}
+				else if (ctx.GTE() != null)
+				{
+					out += addCommand("if_icmpge " + trueLabel);
+				}
+				else if (ctx.EQUALS() != null)
+				{
+					out += addCommand("if_icmpeq " + trueLabel);
+				}
+				else if (ctx.UNEQUALS() != null)
+				{
+					out += addCommand("if_icmpne " + trueLabel);
+				}
+				break;
+			case STRING:
+				out += addCommand("invokevirtual java/lang/String/equals(Ljava/lang/Object;)Z");
+				break;
+
+			default:
+				throw new IllegalArgumentException(
+						"Something unlikely happened. You entered a non-existing type to be compared.");
 		}
 		out += addCommand("iconst_0");
 		out += addCommand("goto " + continueLabel);
@@ -484,7 +505,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 
 				case CHARACTER:
 					out += addCommand("iconst_0");
-					out += addCommand("invokevirtual java/lang/String/charAt(I)I");
+					out += addCommand("invokevirtual java/lang/String/codePointAt(I)I");
 					break;
 
 				default:
@@ -601,8 +622,13 @@ public class slfGenerator extends slfBaseVisitor<String>
 	public String visitCompound_expression(slfParser.Compound_expressionContext ctx)
 	{
 		String out = "";
-		visit(ctx.program());
+		st.openScope();
+		for (slfParser.CommandContext cc : ctx.command())
+		{
+			out += visit(cc);
+		}
 		out += visit(ctx.return_expression());
+		st.closeScope();
 		return out;
 	}
 
@@ -640,7 +666,7 @@ public class slfGenerator extends slfBaseVisitor<String>
 	@Override
 	public String visitLiteral_character(slfParser.Literal_characterContext ctx)
 	{
-		char character = ctx.LITERALCHARACTER().getText().charAt(0);
+		char character = ctx.LITERALCHARACTER().getText().charAt(1);
 		return addCommand("ldc " + (int) character);
 	}
 

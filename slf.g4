@@ -51,7 +51,7 @@ print_expression:		PRINT OPAREN expression (COMMA expression)* CPAREN;
 // if_expressions do return a value, since they can be used as an expression
 if_expression:			IF OPAREN expression CPAREN compound_expression (ELSE compound_expression)?;
 
-compound_expression:	OCURLY program return_expression CCURLY;
+compound_expression:	OCURLY command* return_expression CCURLY; // this cannot use program, because program implies a new scope but return_expression has to be able to access the scope of compound_expression
 
 assignment_expression:	IDENTIFIER BECOMES expression;
 

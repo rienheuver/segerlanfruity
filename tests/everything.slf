@@ -1,0 +1,41 @@
+int i;
+print(read(i));
+if (i < 100)
+{
+	while (i<100)
+	{
+		boolean b;
+		read(b);
+		string checker =
+		if (b)
+		{
+			return "you said true?";
+		}
+		else
+		{
+			return "you said false?";
+		};
+		print(checker);
+		i = i+1;
+	};
+}
+else
+{
+	while (i>100)
+	{
+		char c;
+		read(c);
+		string yourChar =
+		if (c == 'r')
+		{
+			return "b-e-a-utiful!";
+		}
+		else
+		{
+			return "Your character is not so good, visit a psychologist please.";
+		};
+		print(yourChar);
+		i = i-1;
+	};
+};
+print("Next time take a number closer to 100.");

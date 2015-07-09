@@ -1,0 +1,3 @@
+// multiple assign
+int a,b,c = 36;
+print(a,b,c);

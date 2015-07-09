@@ -280,15 +280,33 @@ public class slfChecker extends slfBaseVisitor<Type>
 	{
 		Type exp1 = visit(ctx.expression(0));
 		Type exp2 = visit(ctx.expression(1));
-		if (exp1 != Type.INTEGER || exp2 != Type.INTEGER)
+		if (ctx.EQUALS() != null || ctx.UNEQUALS() != null)
 		{
-			error("comparing requires two operands of type INTEGER. Types found: " + exp1.toString() + " and "
-					+ exp2.toString(), ctx);
-			return Type.ERROR;
+			if (exp1 == exp2)
+			{
+				decoratedTree.put(ctx, exp1);
+				return Type.BOOLEAN;
+			}
+			else
+			{
+				error("equals/unequals-operator requires two operands of same type. Types found: " + exp1.toString() + " and "
+						+ exp2.toString(), ctx);
+				return Type.ERROR;
+			}
 		}
 		else
 		{
-			return Type.BOOLEAN;
+			if ((exp1 != Type.INTEGER || exp2 != Type.INTEGER))
+			{
+				error("comparing requires two operands of type INTEGER. Types found: " + exp1.toString() + " and "
+						+ exp2.toString(), ctx);
+				return Type.ERROR;
+			}
+			else
+			{
+				decoratedTree.put(ctx, Type.BOOLEAN);
+				return Type.BOOLEAN;
+			}
 		}
 	}
 
@@ -336,6 +354,10 @@ public class slfChecker extends slfBaseVisitor<Type>
 			{
 				err++;
 			}
+			else
+			{
+				st.retrieve(identifier.getText()).initialize();
+			}
 		}
 		if (err > 0)
 		{
@@ -352,7 +374,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 			else
 			// one parameter, return type of parameter
 			{
-				return visit(ctx.IDENTIFIER(0));
+				return st.retrieve(ctx.IDENTIFIER(0).getText()).getType();
 			}
 		}
 	}
@@ -427,8 +449,13 @@ public class slfChecker extends slfBaseVisitor<Type>
 	@Override
 	public Type visitCompound_expression(slfParser.Compound_expressionContext ctx)
 	{
-		visit(ctx.program());
+		st.openScope();
+		for (slfParser.CommandContext cc : ctx.command())
+		{
+			visit(cc);
+		}
 		Type type = visit(ctx.return_expression());
+		st.closeScope();
 		return type;
 	}
 
