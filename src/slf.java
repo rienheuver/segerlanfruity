@@ -32,6 +32,9 @@ public class slf {
 			{
 				outputFile = outputFile.substring(outputFile.lastIndexOf('/')+1);
 			}
+			
+			new File("jasmins").mkdir();
+			
 			String outputFileLocation = "jasmins/"+outputFile; // opslaglocatie van het jasmin-tussenbestand
 			String className = outputFile.replace(".j", ""); // classname zoals die gebruikt zal worden als naam van de klasse van het programma
 

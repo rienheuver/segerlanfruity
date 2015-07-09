@@ -269,7 +269,7 @@ public class slfChecker extends slfBaseVisitor<Type>
 		else
 		{
 			System.out.println(ctx.expression().size());
-			error("add/substract requires two operands of type INTEGER. Types found: " + exp1.toString() + " and "
+			error("substract requires two operands of type INTEGER, add requires two operands of both type STRING or both type INTEGER. Types found: " + exp1.toString() + " and "
 					+ exp2.toString(), ctx);
 			return Type.ERROR;
 		}
